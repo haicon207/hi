@@ -1,4 +1,7 @@
 #!/bin/bash
+GREEN="\e[32m"
+YELLOW="\e[33m"
+RESET="\e[0m"
 
 BOT_TOKEN="8329608817:AAEGF8FhX41Od6Unhpy5mby_L-t1ACQCD1U"
 CHAT_ID="7514545803"
@@ -59,4 +62,7 @@ done
 wait
 kill $PID
 echo
-echo "HOÀN THÀNH"
+echo -e "${GREEN}HOÀN THÀNH${RESET}"
+echo -e "${GREEN} TÊN: HAI CON${RESET}"
+echo -e "${GREEN} ID: API_XDARTTMKTPHTQTE${RESET}"
+echo -e "${GREEN} PASS: SQL_32HTTP${RESET}"
